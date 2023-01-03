@@ -76,9 +76,7 @@ const Todo = () => {
     // todoData: [] 배열
     // axios 로 MongoDB 에 항목 추가
     axios
-      .post("/api/post/submit", {
-        ...addTodo,
-      })
+      .post("/api/post/submit", { ...addTodo })
       .then((res) => {
         // console.log(res.data);
         if (res.data.success) {
@@ -98,12 +96,21 @@ const Todo = () => {
   };
 
   const deleteAllClick = () => {
-    // axios를 이용하여 MongoDB 목록 비워줌
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      // axios를 이용하여 MongoDB 목록 비워줌
+      axios
+        .post("/api/post/deleteall")
+        .then(() => {
+          setTodoData([]);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
     // 배열 비우기
-    setTodoData([]);
     // 로컬에 저장한다.(DB예정)
     // 자료를 지운다.(DB 초기화)
-    localStorage.clear();
+    // localStorage.clear();
   };
 
   return (
