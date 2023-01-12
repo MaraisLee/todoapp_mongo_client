@@ -9,6 +9,7 @@ const ListItem = React.memo(({ item, todoData, setTodoData }) => {
   // 제목을 출력하고 변경하는 State
   // 편집창에는 타이틀이 먼저 작성되어야 있어야 하므로
   const [editedTitle, setEditedTitle] = useState(item.title);
+  // console.log(item);
 
   const deleteClick = (id) => {
     if (window.confirm("정말 삭제하시겠습니까?")) {
@@ -49,7 +50,7 @@ const ListItem = React.memo(({ item, todoData, setTodoData }) => {
     // axios 를 이용해서 MongoDB complete 업데이트
     let body = {
       id: todoId,
-      completed: !item.completed,
+      completed: item.completed,
     };
     // then() : 서버에서 회신(res)이 왔을때 처리
     // catch() : 서버에서 응답없을 때
@@ -97,6 +98,41 @@ const ListItem = React.memo(({ item, todoData, setTodoData }) => {
       });
     // localStorage.setItem("todoData", JSON.stringify(tempTodo));
   };
+  // 날짜 출력
+  const WEEKDAY = ["일", "월", "화", "수", "목", "금", "토"];
+  const showTime = (_timestamp) => {
+    const date = new Date(_timestamp);
+    let months = date.getMonth();
+    months = months + 1 < 9 ? "0" + (months + 1) : months + 1;
+    let hours = date.getHours();
+    let ampm = hours >= 12 ? "p.m" : "a.m";
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    hours = hours + 1 < 9 ? "0" + hours : hours;
+    // 분 표시
+    let minutes = date.getMinutes();
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    let seconds = date.getSeconds();
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    let time = date.getFullYear();
+    time += "/";
+    time += months;
+    time += "/";
+    time += date.getDate();
+    time += "/";
+    time += WEEKDAY[date.getDay()];
+    time += " ";
+    time += hours;
+    time += ":";
+    time += minutes;
+    time += ":";
+    time += seconds;
+    time += " ";
+    time += ampm;
+
+    return time;
+  };
 
   if (isEditing) {
     return (
@@ -135,8 +171,9 @@ const ListItem = React.memo(({ item, todoData, setTodoData }) => {
         </div>
 
         <div className="items-center cursor-pointer">
+          <span>{showTime(item.id)}</span>
           <button
-            className="px-4 "
+            className="px-4"
             onClick={() => {
               setIsEditing(true);
               setEditedTitle(item.title);
